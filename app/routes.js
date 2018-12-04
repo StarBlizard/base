@@ -1,23 +1,10 @@
-const path         = require('path');
-const { app }      = require(path.join(process.env.PWD, '/services/server'));
-const { passport } = require(path.join(process.env.PWD, '/services/passport'));
+const path = require('path');
+const fs   = require('fs');
 
-// Controllers
-const { alive, index, home } = require('./controllers/main');
-const isAuthenticated        = require('./middleware/isAuthenticated');
+const controllersFolder = path.join(process.cwd(), '/app/controllers/');
 
-const authController         = require('./controllers/auth');
-
-// WatchDog
-app.get('/alive', alive);
-
-// Views
-app.get('/', index);
-app.get('/home', isAuthenticated, home);
-app.get('/alive', alive);
-
-// Auth
-app.post('/login'   , passport.authenticate('local'), authController.granted);
-app.post('/register', authController.register);
-app.get('/granted' , authController.granted);
-app.get('/logout'   , authController.logout);
+fs.readdir(controllersFolder, (err, fileNames) => {
+  fileNames.forEach( fileName => {
+    require(controllersFolder + fileName);
+  });
+});
